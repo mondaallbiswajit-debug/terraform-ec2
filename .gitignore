@@ -1,0 +1,13 @@
+terraform.tfvars
+terraform.tfstate.backup
+id_rsa
+id_rsa.pub
+
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+.terraform.lock.hcl
