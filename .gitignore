@@ -9,5 +9,6 @@ id_rsa.pub
 crash.log
 crash.*.log
 *.tfvars
+!terraform-example.tfvars
 *.tfvars.json
 .terraform.lock.hcl
