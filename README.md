@@ -28,10 +28,30 @@ Terraform configuration that provisions a single AWS EC2 instance (Ubuntu), a se
 
 - [Terraform](https://developer.hashicorp.com/terraform/downloads) installed
 - An AWS account with programmatic access (access key + secret key)
-- An SSH key pair for connecting to the instance:
-  ```bash
-  ssh-keygen -t rsa -b 4096 -f id_rsa -N ""
-  ```
+- An SSH key pair for connecting to the instance (see below)
+
+### Generating the `id_rsa` / `id_rsa.pub` key pair
+
+`key-pair.tf` reads a local public key file (`id_rsa.pub`) and registers it with AWS, so the files must exist in this directory **before** running `terraform apply`. Terraform does not generate them for you.
+
+1. From this directory (`ec2/`), generate a new RSA key pair:
+   ```bash
+   ssh-keygen -t rsa -b 4096 -f id_rsa -N ""
+   ```
+   - `-t rsa -b 4096` — RSA key, 4096 bits.
+   - `-f id_rsa` — writes the private key to `./id_rsa` and the public key to `./id_rsa.pub`.
+   - `-N ""` — sets an empty passphrase, so Terraform/SSH can use it non-interactively. Omit `-N ""` (you'll be prompted) if you want a passphrase instead — just note that you'll need to enter it whenever you SSH in.
+2. Verify both files were created:
+   ```bash
+   ls -l id_rsa id_rsa.pub
+   ```
+3. Lock down the private key's permissions (SSH refuses to use a private key that's readable by others):
+   ```bash
+   chmod 600 id_rsa
+   ```
+4. Leave both files in this directory — `key-pair.tf` expects `id_rsa.pub` at `${path.module}/id_rsa.pub`, and both are already gitignored so they won't be committed.
+
+Already have an SSH key pair you'd rather reuse? Copy or symlink it into this directory as `id_rsa` / `id_rsa.pub` instead of generating a new one.
 
 ## Setup
 
@@ -40,7 +60,7 @@ Terraform configuration that provisions a single AWS EC2 instance (Ubuntu), a se
    cp terraform-example.tfvars terraform.tfvars
    ```
 2. Edit `terraform.tfvars` with your AWS region, access key, secret key, AMI name filter, instance type, instance name, and ports.
-3. Make sure `id_rsa` / `id_rsa.pub` exist in this directory (see Prerequisites).
+3. Make sure `id_rsa` / `id_rsa.pub` exist in this directory (see [Generating the `id_rsa` / `id_rsa.pub` key pair](#generating-the-id_rsa--id_rsapub-key-pair) above).
 
 ## Usage
 
