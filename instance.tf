@@ -8,19 +8,5 @@ resource "aws_instance" "example" {
     Name = var.instance_name
   }
   user_data = file("${path.module}/script.sh")
-  connection {
-    type        = "ssh"
-    user        = "ubuntu"
-    private_key = file("${path.module}/id_rsa")
-    host        = self.public_ip
-  }
-  provisioner "file" {
-    source      = "reaadme.md"
-    destination = "/tmp/readme.md"
 
-  }
-
-  provisioner "local-exec" {
-    command = "echo ${self.public_ip} >/tmp/myPublicIp.txt"
-  }
 }
